@@ -16,3 +16,6 @@ __pycache__/
 .env
 instance/
 *.db
+
+# conf ja tokens
+sala/

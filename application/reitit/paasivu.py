@@ -27,13 +27,13 @@ def lisaa():
     uusi_sisalto = request.form.get('sisalto')
     # Haetaan koordinaatit lomakkeelta ja muutetaan ne numeroiksi (float)
     uusi_lat = request.form.get('lat')
-    uusi_lng = request.form.get('lng')
+    uusi_lon = request.form.get('lon')
     
-    if uusi_sisalto and uusi_lat and uusi_lng:
+    if uusi_sisalto and uusi_lat and uusi_lon:
         uusi_tehtava = Tehtava(
             sisalto=uusi_sisalto,
             lat=float(uusi_lat),
-            lng=float(uusi_lng)
+            lon=float(uusi_lon)
         )
         db.session.add(uusi_tehtava)
         db.session.commit()

@@ -13,7 +13,7 @@
     <form action="/lisaa" method="POST" style="margin-bottom: 20px;">
         <input type="text" name="sisalto" placeholder="Mikä tehtävä otetaan työn alle?" required style="width: 50%; padding: 8px;">
         <input type="hidden" id="form-lat" name="lat" required>
-        <input type="hidden" id="form-lng" name="lng" required>
+        <input type="hidden" id="form-lon" name="lon" required>
         <button type="submit" style="padding: 8px;">Lisää tehtävä klikattuun paikkaan</button>
     </form>
     
@@ -26,7 +26,7 @@
     <ul style="list-style: none; padding: 0;">
         {% for tehtava in tehtavat %}
             <li style="display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #eee;">
-                <span><strong>{{ tehtava.sisalto }}</strong> (Koordinaatit: {{ tehtava.lat|round(4) }}, {{ tehtava.lng|round(4) }})</span>
+                <span><strong>{{ tehtava.sisalto }}</strong> (Koordinaatit: {{ tehtava.lat|round(4) }}, {{ tehtava.lon|round(4) }})</span>
                 <a href="/poista/{{ tehtava.id }}" style="color: red; text-decoration: none;">Poista</a>
             </li>
         {% endfor %}
@@ -70,13 +70,13 @@
 
             // Päivitetään HTML-lomakkeen piilotetut kentät
             document.getElementById('form-lat').value = klikattuLat;
-            document.getElementById('form-lng').value = klikattuLng;
+            document.getElementById('form-lon').value = klikattuLng;
 
-            // Siirretään tai luodaan väliaikainen "Uusi tehtävä tulee tähän" -neula kartalle
+            // Siirretään  -pinni kartalle
             if (nykyinenUusiMarker) {
                 nykyinenUusiMarker.setLatLng(e.latlng);
             } else {
-                nykyinenUusiMarker = L.marker(e.latlng, {opacity: 0.7}).addTo(map);
+                nykyinenUusiMarker = L.marker(e.latlng, {opacity: 0.5}).addTo(map);
                 nykyinenUusiMarker.bindPopup("Uusi tehtävä luodaan tähän paikkaan!").openPopup();
             }
         });

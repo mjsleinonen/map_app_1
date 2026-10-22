@@ -1,6 +1,6 @@
 import pytest
 
-from app import create_app, db
+from application import create_app, db
 
 @pytest.fixture()
 def app():
@@ -18,7 +18,7 @@ def app():
         db.drop_all()
 
 @pytest.fixture
-def client():
+def client(app):
     app.config['TESTING'] = True
     with app.test_client() as client:
         yield client

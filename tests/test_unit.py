@@ -1,67 +1,71 @@
 import pytest
 import unittest
 
-import unittest
-
 import sys
 from pathlib import Path
 
-# Haetaan nykyisen tiedoston kansio ja sen ylempi kansio (parent)
+# Import ylempää
 nykyinen_kansio = Path(__file__).resolve().parent
 ylempi_kansio = nykyinen_kansio.parent
-
-# Lisätään ylempi kansio sys.path-listan alkuun
 sys.path.insert(0, str(ylempi_kansio))
 
-from app1 import app, db, User
+from application.models import Tehtava
+from application import db
+from application import create_app
 
-class FlaskTestCase(unittest.TestCase):
+app = create_app()
 
-    # Ajoa ennen jokaista testiä: luodaan tyhjä testikanta muistiin
+class TestKarttaSovellus(unittest.TestCase):
+
     def setUp(self):
-        app.config['TESTING'] = True
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:' # Testataan muistikannalla
-        self.client = app.test_client()
+        """Suoritetaan AUTOMAATTISESTI ennen JOKAISTA testifunktiota."""
+        # 1. Luodaan sovellusinstanssi tehtaan kautta
+        self.app = create_app()
         
-        with app.app_context():
-            db.create_all()
+        # 2. Päivitetään testiasetukset (käytetään esim. muistitietokantaa)
+        self.app.config.update({
+            "TESTING": True,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:"
+        })
 
-    # Siivous testin jälkeen
+        # 3. Luodaan testiasiakas pyyntöjen simulointia varten
+        self.client = self.app.test_client()
+
+        # 4. AKTIVOIDAAN SOVELLUSKONTEKSTI (Erittäin tärkeää Application Factoryssa!)
+        self.app_context = self.app.app_context()
+        self.app_context.push()
+
+        # 5. Alustetaan tietokantataulut puhtaina tätä testiä varten
+        db.create_all()
+
     def tearDown(self):
-        with app.app_context():
-            db.session.remove()
-            db.drop_all()
+        """Suoritetaan AUTOMAATTISESTI jokaisen testifunktion jälkeen."""
+        # Tyhjennetään tietokanta ja poistetaan konteksti, jotta seuraava testi alkaa puhtaalta pöydältä
+        db.session.remove()
+        db.drop_all()
+        self.app_context.pop()
 
-    # 1. Testaa, että etusivu vastaa HTTP 200 (OK)
-    def test_etusivu(self):
-        vastaus = self.client.get('/')
-        self.assertEqual(vastaus.status_code, 200) 
+    def test_karttasivu_palauttaa_ok(self):
+        """Testataan, että karttasivu latautuu oikein."""
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
 
-    # 2. Testaa rekisteröintisivun latautuminen (GET)
-    def test_register_sivu_latautuu(self):
-        vastaus = self.client.get('/lisaa')
-        self.assertEqual(vastaus.status_code, 200)
-
-    # 3. Testaa lomakkeen lähetys ja tallennus kantaan (POST)
-    def test_kayttajan_rekisterointi(self):
-        vastaus = self.client.post('/lisaa', data=dict(
-            name='testiukko',
-            rooli='rooli'
-        ), follow_redirects=True)
+    def test_pisteen_tallennus_tietokantaan(self):
+        """Testataan lomakelähetystä ja tietokantatallennusta."""
+        testidata = {
+            'lat': '60.1699',
+            'lon': '24.9384',
+            'sisalto': 'Helsinki'
+        }
         
-        # Tarkistetaan, että pyyntö meni läpi (200)
-        self.assertEqual(vastaus.status_code, 200)
-        
-        # Tarkistetaan vielä suoraan tietokannasta, että käyttäjä todella tallentui
-        with app.app_context():
-            kayttaja = User.query.filter_by(name='testiukko').first()
-            self.assertIsNotNone(kayttaja)
-            self.assertEqual(kayttaja.name, 'testiukko')
+        # Tehdään simuloitu POST-pyyntö reittiin
+        response = self.client.post('/lisaa', data=testidata)
+        self.assertEqual(response.status_code, 302)
 
-    # 4. testaa user lista
-    def test_users_sivu_latautuu(self):
-        vastaus = self.client.get('/kayttajat')
-        self.assertEqual(vastaus.status_code, 200)
+        # Tarkistetaan SQLAlchemy-mallilla, että piste todella tallentui muistitietokantaan
+        piste = Tehtava.query.filter_by(sisalto='Helsinki').first()
+        self.assertIsNotNone(piste)
+        self.assertEqual(piste.lat, 60.1699)
 
 if __name__ == '__main__':
     unittest.main()
