@@ -1,0 +1,6 @@
+{% for tehtava in tehtavat %}
+    // Luodaan neula tietokannan koordinaatteihin ja lisätään pop-up teksti
+    L.marker([{{ tehtava.lat }}, {{ tehtava.lng }}])
+        .addTo(map)
+        .bindPopup("<b>{{ tehtava.sisalto }}</b>");
+{% endfor %}

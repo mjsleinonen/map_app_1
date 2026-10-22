@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=device-width, initial-scale=1.0">
+    <title>Flask & SQLAlchemy Demo</title>
+    <!-- Yksinkertainen tyylitelty ulkoasu ilman erillistä CSS-tiedostoa -->
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px auto; max-width: 500px; line-height: 1.6; }
+        .tehtava-lista { list-style: none; padding: 0; }
+        .tehtava-rivi { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #ddd; }
+        .poista-linkki { color: red; text-decoration: none; }
+    </style>
+    <!-- TÄMÄ RIVI PAKROTTAA PALASET RUUDUKKOON - pitää olla ensimmäisenä -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/leaflet.css') }}">
+    <!-- Omat tyylitiedostot vasta sen jälkeen -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    {% block body %}
+    <!-- Varsinainen sisältö ladataan tähän miltä tahansa alasivulta -->
+    {% endblock %}
+
+    <script src="https://unpkg.com"></script>
+
+    {% block scripts %}
+    <!-- Skripti -->
+    {% endblock %}
+
+</body>
+
+</html>

@@ -1,0 +1,13 @@
+/* Tämän avulla Leaflet-kartta ei jää valkoiseksi */
+#kartta {
+    height: 500px;
+    width: 500px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+}
+
+body {
+    font-family: sans-serif;
+    background-color: #f4f4f4;
+    padding: 20px;
+}

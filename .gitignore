@@ -1,0 +1,18 @@
+# 
+venv/
+.venv/
+ENV/
+
+# temp filut
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Pytestin välimuistit
+.pytest_cache/
+
+# Flaskin paikalliset  ja SQLite-db....
+.env
+instance/
+*.db

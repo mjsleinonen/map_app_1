@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <h1>Karttatehtävät (Flask-demo)</h1>
+
+    <!-- Lomake uuden tehtävän lisäämiseksi -->
+    <form action="/lisaa" method="POST">
+        <input type="text" name="sisalto" placeholder="Kirjoita uusi tehtävä..." required style="width: 70%; padding: 8px;">
+        <button type="submit" style="padding: 8px;">Lisää</button>
+    </form>
+
+    <h2>Kaikki tehtävät:</h2>
+    {% if tehtavat|length < 1 %}
+        <p>Ei tehtäviä. Olet vapaa!</p>
+    {% else %}
+        <ul class="tehtava-lista">
+            {% for tehtava in tehtavat %}
+                <li class="tehtava-rivi">
+                    <span>{{ tehtava.sisalto }}</span>
+                    <a href="/poista/{{ tehtava.id }}" class="poista-linkki">Poista</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
